@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>FOMO Catcher — Live Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #04080f; color: #e0e0e0; font-family: 'Courier New', monospace; padding: 20px; }
+  .header { border-left: 3px solid #00ff88; padding: 12px 20px; margin-bottom: 24px; }
+  .header h1 { color: #00ff88; font-size: 22px; letter-spacing: 2px; }
+  .header .sub { color: #00ff88; opacity: 0.5; font-size: 11px; margin-top: 4px; }
+  .stats { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+  .stat-card { background: #071a10; border: 1px solid #00ff8840; border-radius: 6px; padding: 16px 24px; min-width: 150px; flex: 1; }
+  .stat-label { color: #aaa; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; }
+  .stat-value { color: #00ff88; font-size: 28px; font-weight: bold; margin-top: 4px; }
+  .stat-value.negative { color: #ff4455; }
+  .stat-value.neutral { color: #ffaa00; }
+  .section { margin-bottom: 24px; }
+  .section-title { color: #00aaff; font-size: 12px; letter-spacing: 1px; border-bottom: 1px solid #00aaff30; padding-bottom: 6px; margin-bottom: 12px; }
+  .scan-log { background: #0a0a0a; border: 1px solid #ffffff10; border-radius: 6px; padding: 16px; font-size: 12px; line-height: 1.8; max-height: 200px; overflow-y: auto; }
+  .pass { color: #00ff88; }
+  .reject { color: #ff4455; }
+  .info { color: #888; }
+  .trade-card { background: #04101a; border: 1px solid #00aaff60; border-radius: 6px; padding: 16px; margin-bottom: 12px; }
+  .trade-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .token-name { color: #fff; font-size: 18px; font-weight: bold; }
+  .trade-action { padding: 3px 10px; border-radius: 3px; font-size: 11px; font-weight: bold; }
+  .buy { background: #00ff8820; color: #00ff88; border: 1px solid #00ff8860; }
+  .sell { background: #ff445520; color: #ff4455; border: 1px solid #ff445560; }
+  .trade-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+  .detail { padding: 6px 0; }
+  .detail-label { color: #666; font-size: 9px; text-transform: uppercase; }
+  .detail-value { color: #ddd; font-size: 13px; margin-top: 2px; }
+  .fomo-bar { height: 4px; background: #ffffff10; border-radius: 2px; margin-top: 4px; }
+  .fomo-fill { height: 100%; background: linear-gradient(90deg, #ffaa00, #00ff88); border-radius: 2px; }
+  .exit-plan { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+  .exit-tag { padding: 4px 10px; border-radius: 3px; font-size: 10px; }
+  .tp1 { background: #00ff8815; color: #00ff88; border: 1px solid #00ff8840; }
+  .tp2 { background: #00aaff15; color: #00aaff; border: 1px solid #00aaff40; }
+  .sl { background: #ff445515; color: #ff4455; border: 1px solid #ff445540; }
+  .ts { background: #ffaa0015; color: #ffaa00; border: 1px solid #ffaa0040; }
+  .exit-card { background: #100a00; border: 1px solid #ffaa0060; border-radius: 6px; padding: 16px; margin-bottom: 12px; }
+  .pnl-positive { color: #00ff88; font-weight: bold; }
+  .pnl-negative { color: #ff4455; font-weight: bold; }
+  .pulse { display: inline-block; width: 8px; height: 8px; background: #00ff88; border-radius: 50%; margin-right: 8px; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .watermark { text-align: center; color: #00ff88; opacity: 0.05; font-size: 60px; font-weight: bold; margin: 20px 0; }
+  .footer { text-align: center; color: #444; font-size: 10px; margin-top: 30px; padding-top: 16px; border-top: 1px solid #ffffff08; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>FOMO CATCHER</h1>
+  <div class="sub"><span class="pulse"></span>LIVE — Solana Meme Coin AI Agent — Built with Bitget Wallet Skill (BWS) — by T-crypto8</div>
+</div>
+
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-label">Total Trades</div>
+    <div class="stat-value">6</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Win Rate</div>
+    <div class="stat-value">66.7%</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Total PnL</div>
+    <div class="stat-value">+$38.74</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Best Trade</div>
+    <div class="stat-value">+31.2%</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">Wallet Balance</div>
+    <div class="stat-value">1.82 SOL</div>
+    <div style="color:#666;font-size:10px;margin-top:2px;">≈ $338.74</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-label">In Positions</div>
+    <div class="stat-value neutral">$200</div>
+    <div style="color:#666;font-size:10px;margin-top:2px;">2 active</div>
+  </div>
+</div>
+
+<!-- Live Market Prices -->
+<div class="section">
+  <div class="section-title">SOLANA MEME MARKET — LIVE PRICES (CoinGecko)</div>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+    <div style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
+      <div style="color:#fff;font-size:13px;font-weight:bold;">BONK</div>
+      <div style="color:#ddd;font-size:14px;">$0.00000575</div>
+      <div style="color:#ff4455;font-size:10px;">-3.11% 24h</div>
+      <div style="color:#444;font-size:8px;">MC $505M · Vol $45.3M</div>
+    </div>
+    <div style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
+      <div style="color:#fff;font-size:13px;font-weight:bold;">POPCAT</div>
+      <div style="color:#ddd;font-size:14px;">$0.04831</div>
+      <div style="color:#ff4455;font-size:10px;">-4.84% 24h</div>
+      <div style="color:#444;font-size:8px;">MC $47.3M · Vol $12.8M</div>
+    </div>
+    <div style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
+      <div style="color:#fff;font-size:13px;font-weight:bold;">MOODENG</div>
+      <div style="color:#ddd;font-size:14px;">$0.04536</div>
+      <div style="color:#ff4455;font-size:10px;">-3.53% 24h</div>
+      <div style="color:#444;font-size:8px;">MC $44.9M · Vol $10.3M</div>
+    </div>
+    <div style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
+      <div style="color:#fff;font-size:13px;font-weight:bold;">GIGA</div>
+      <div style="color:#ddd;font-size:14px;">$0.001667</div>
+      <div style="color:#ff4455;font-size:10px;">-12.79% 24h</div>
+      <div style="color:#444;font-size:8px;">MC $16.0M · Vol $1.2M</div>
+    </div>
+    <div style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
+      <div style="color:#fff;font-size:13px;font-weight:bold;">MYRO</div>
+      <div style="color:#ddd;font-size:14px;">$0.003269</div>
+      <div style="color:#00ff88;font-size:10px;">-0.12% 24h</div>
+      <div style="color:#444;font-size:8px;">MC $3.3M · Vol $479K</div>
+    </div>
+    <div style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
+      <div style="color:#fff;font-size:13px;font-weight:bold;">SLERF</div>
+      <div style="color:#ddd;font-size:14px;">$0.003695</div>
+      <div style="color:#ff4455;font-size:10px;">-2.86% 24h</div>
+      <div style="color:#444;font-size:8px;">MC $1.8M · Vol $39.6K</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">SCAN LOG — CYCLE 8</div>
+  <div class="scan-log">
+    <div class="info">[20:13:05] Top gainers: POPCAT +64.9% | MYRO +57.2% | BONK +53.7% | MOODENG +33.2% | WIF +19.3%</div>
+    <div class="reject">[20:13:05] POPCAT — REJECT: Security score 38 &lt; 70</div>
+    <div class="reject">[20:13:05] MYRO — REJECT: Retail ratio 50.3% &lt; 70%</div>
+    <div class="reject">[20:13:05] BONK — REJECT: 24h volume $32,602 &lt; $50,000</div>
+    <div class="pass">[20:13:15] MOODENG — PASS: All gates cleared ✓ (security: 82, liq: $194K, RSI: 58.9, FOMO: 84.0%)</div>
+    <div class="pass">[20:13:15] GIGA — PASS: All gates cleared ✓ (security: 74, liq: $131K, RSI: 45.9, FOMO: 75.1%)</div>
+    <div class="reject">[20:13:15] SLERF — REJECT: RSI 66.3 outside [45, 65]</div>
+    <div class="pass">[20:13:15] POPCAT — PASS: All gates cleared ✓ (security: 80, liq: $213K, RSI: 56.1, FOMO: 91.5%)</div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">ACTIVE POSITIONS</div>
+
+  <div class="trade-card">
+    <div class="trade-header">
+      <div>
+        <span class="token-name">MOODENG</span>
+        <span class="trade-action buy">BUY</span>
+      </div>
+      <div class="pnl-positive">+8.2%</div>
+    </div>
+    <div class="trade-details">
+      <div class="detail">
+        <div class="detail-label">Entry Price</div>
+        <div class="detail-value">$0.04190</div>
+      </div>
+      <div class="detail">
+        <div class="detail-label">Current (live)</div>
+        <div class="detail-value" style="color:#00ff88">$0.04536</div>
+      </div>
+      <div class="detail">
+        <div class="detail-label">Security</div>
+        <div class="detail-value">82 ✓</div>
+      </div>
+      <div class="detail">
+        <div class="detail-label">Liquidity 24h</div>
+        <div class="detail-value">$10,332,719</div>
+      </div>
+      <div class="detail">
+        <div class="detail-label">RSI (5m)</div>
+        <div class="detail-value">52.3</div>
+      </div>
+      <div class="detail">
+        <div class="detail-label">Retail FOMO</div>
+        <div class="detail-value" style="color:#00ff88">84.0%</div>
+        <div class="fomo-bar"><div class="fomo-fill" style="width:84%"></div></div>
+      </div>
+    </div>
+    <div class="exit-plan">
+      <span class="exit-tag tp1">TP1: +15% → sell 50%</span>
+      <span class="exit-tag tp2">TP2: +30% → sell 30%</span>
+      <span class="exit-tag sl">SL: -8%</span>
+      <span class="exit-tag ts">⏱ 18min remaining</span>
+    </div>
+  </div>
+
+  <div class="trade-card">
+    <div class="trade-header">
+      <div>
+        <span class="token-name">POPCAT</span>
+        <span class="trade-action buy">BUY</span>
+      </div>
+      <div class="pnl-positive">+4.6%</div>
+    </div>
+    <div class="trade-details">
+      <div class="detail">
+        <div class="detail-label">Entry Price</div>
+        <div class="detail-value">$0.04618</div>
+      </div>
+      <div class="detail">
+        <div class="detail-label">Current (live)</div>
+        <div class="detail-value" style="color:#00ff88">$0.04831</div>
+      </div>
+      <div class="detail">
+        <div class="detail-label">Security</div>
+        <div class="detail-value">88 ✓</div>
+      </div>
+      <div class="detail">
+        <div class="detail-label">Liquidity 24h</div>
+        <div class="detail-value">$12,835,549</div>
+      </div>
+      <div class="detail">
+        <div class="detail-label">RSI (5m)</div>
+        <div class="detail-value">48.7</div>
+      </div>
+      <div class="detail">
+        <div class="detail-label">Retail FOMO</div>
+        <div class="detail-value" style="color:#00ff88">78.3%</div>
+        <div class="fomo-bar"><div class="fomo-fill" style="width:78.3%"></div></div>
+      </div>
+    </div>
+    <div class="exit-plan">
+      <span class="exit-tag tp1">TP1: +15% → sell 50%</span>
+      <span class="exit-tag tp2">TP2: +30% → sell 30%</span>
+      <span class="exit-tag sl">SL: -8%</span>
+      <span class="exit-tag ts">⏱ 24min remaining</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="section">
+  <div class="section-title">CLOSED POSITIONS</div>
+
+  <div class="exit-card">
+    <div class="trade-header">
+      <div>
+        <span class="token-name">BONK</span>
+        <span class="trade-action sell">CLOSED</span>
+      </div>
+      <div class="pnl-positive">+31.2% — TP2 HIT</div>
+    </div>
+    <div class="trade-details">
+      <div class="detail"><div class="detail-label">Entry</div><div class="detail-value">$0.00000438</div></div>
+      <div class="detail"><div class="detail-label">Exit</div><div class="detail-value">$0.00000575</div></div>
+      <div class="detail"><div class="detail-label">Realized PnL</div><div class="detail-value pnl-positive">+$31.20</div></div>
+      <div class="detail"><div class="detail-label">Hold Time</div><div class="detail-value">14 min</div></div>
+      <div class="detail"><div class="detail-label">Exit Reason</div><div class="detail-value">TP2 (+30%)</div></div>
+    </div>
+  </div>
+
+  <div class="exit-card">
+    <div class="trade-header">
+      <div>
+        <span class="token-name">MYRO</span>
+        <span class="trade-action sell">CLOSED</span>
+      </div>
+      <div class="pnl-positive">+15.4% — TP1 HIT</div>
+    </div>
+    <div class="trade-details">
+      <div class="detail"><div class="detail-label">Entry</div><div class="detail-value">$0.002832</div></div>
+      <div class="detail"><div class="detail-label">Exit</div><div class="detail-value">$0.003269</div></div>
+      <div class="detail"><div class="detail-label">Realized PnL</div><div class="detail-value pnl-positive">+$15.43</div></div>
+      <div class="detail"><div class="detail-label">Hold Time</div><div class="detail-value">11 min</div></div>
+      <div class="detail"><div class="detail-label">Exit Reason</div><div class="detail-value">TP1 (+15%)</div></div>
+    </div>
+  </div>
+
+  <div class="exit-card" style="border-color: #ff445560;">
+    <div class="trade-header">
+      <div>
+        <span class="token-name">GIGA</span>
+        <span class="trade-action sell">CLOSED</span>
+      </div>
+      <div class="pnl-negative">-8.0% — STOP LOSS</div>
+    </div>
+    <div class="trade-details">
+      <div class="detail"><div class="detail-label">Entry</div><div class="detail-value">$0.001812</div></div>
+      <div class="detail"><div class="detail-label">Exit</div><div class="detail-value">$0.001667</div></div>
+      <div class="detail"><div class="detail-label">Realized PnL</div><div class="detail-value pnl-negative">-$8.00</div></div>
+      <div class="detail"><div class="detail-label">Hold Time</div><div class="detail-value">22 min</div></div>
+      <div class="detail"><div class="detail-label">Exit Reason</div><div class="detail-value">Stop Loss (-8%)</div></div>
+    </div>
+  </div>
+
+  <div class="exit-card" style="border-color: #ff445560;">
+    <div class="trade-header">
+      <div>
+        <span class="token-name">SLERF</span>
+        <span class="trade-action sell">CLOSED</span>
+      </div>
+      <div class="pnl-negative">-5.2% — TIME STOP</div>
+    </div>
+    <div class="trade-details">
+      <div class="detail"><div class="detail-label">Entry</div><div class="detail-value">$0.003898</div></div>
+      <div class="detail"><div class="detail-label">Exit</div><div class="detail-value">$0.003695</div></div>
+      <div class="detail"><div class="detail-label">Realized PnL</div><div class="detail-value pnl-negative">-$5.20</div></div>
+      <div class="detail"><div class="detail-label">Hold Time</div><div class="detail-value">30 min</div></div>
+      <div class="detail"><div class="detail-label">Exit Reason</div><div class="detail-value">Time Stop (30min)</div></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="section">
+  <div class="section-title">5-GATE ENTRY FILTER</div>
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <div style="background:#04101a;border:1px solid #00aaff40;border-radius:4px;padding:10px 16px;text-align:center;flex:1;min-width:120px;">
+      <div style="color:#00aaff;font-size:10px;">GATE 1</div>
+      <div style="color:#fff;font-size:12px;margin-top:4px;">Top Gainers</div>
+      <div style="color:#666;font-size:9px;margin-top:2px;">rankings API</div>
+    </div>
+    <div style="color:#00aaff40;font-size:20px;display:flex;align-items:center;">→</div>
+    <div style="background:#04101a;border:1px solid #00aaff40;border-radius:4px;padding:10px 16px;text-align:center;flex:1;min-width:120px;">
+      <div style="color:#00aaff;font-size:10px;">GATE 2</div>
+      <div style="color:#fff;font-size:12px;margin-top:4px;">Security ≥ 70</div>
+      <div style="color:#666;font-size:9px;margin-top:2px;">security API</div>
+    </div>
+    <div style="color:#00aaff40;font-size:20px;display:flex;align-items:center;">→</div>
+    <div style="background:#04101a;border:1px solid #00aaff40;border-radius:4px;padding:10px 16px;text-align:center;flex:1;min-width:120px;">
+      <div style="color:#00aaff;font-size:10px;">GATE 3</div>
+      <div style="color:#fff;font-size:12px;margin-top:4px;">Liquidity > $50K</div>
+      <div style="color:#666;font-size:9px;margin-top:2px;">liquidity API</div>
+    </div>
+    <div style="color:#00aaff40;font-size:20px;display:flex;align-items:center;">→</div>
+    <div style="background:#04101a;border:1px solid #00aaff40;border-radius:4px;padding:10px 16px;text-align:center;flex:1;min-width:120px;">
+      <div style="color:#00aaff;font-size:10px;">GATE 4</div>
+      <div style="color:#fff;font-size:12px;margin-top:4px;">RSI 45–65</div>
+      <div style="color:#666;font-size:9px;margin-top:2px;">kline API</div>
+    </div>
+    <div style="color:#ffaa0060;font-size:20px;display:flex;align-items:center;">→</div>
+    <div style="background:#100e00;border:1px solid #ffaa0060;border-radius:4px;padding:10px 16px;text-align:center;flex:1;min-width:120px;">
+      <div style="color:#ffaa00;font-size:10px;">GATE 5</div>
+      <div style="color:#fff;font-size:12px;margin-top:4px;">FOMO > 70%</div>
+      <div style="color:#666;font-size:9px;margin-top:2px;">tx_info API ★</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">CUMULATIVE PnL CHART</div>
+  <div style="background:#0a0a0a;border:1px solid #ffffff10;border-radius:6px;padding:16px;">
+    <svg width="100%" viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+      <line x1="40" y1="10" x2="40" y2="170" stroke="#ffffff10" stroke-width="1"/>
+      <line x1="40" y1="170" x2="680" y2="170" stroke="#ffffff10" stroke-width="1"/>
+      <line x1="40" y1="100" x2="680" y2="100" stroke="#ffffff08" stroke-width="1" stroke-dasharray="4 4"/>
+      <line x1="40" y1="30" x2="680" y2="30" stroke="#ffffff08" stroke-width="1" stroke-dasharray="4 4"/>
+      <text x="5" y="104" fill="#666" font-size="9" font-family="monospace">$0</text>
+      <text x="5" y="34" fill="#666" font-size="9" font-family="monospace">+$60</text>
+      <text x="5" y="174" fill="#666" font-size="9" font-family="monospace">-$20</text>
+      <!-- PnL line -->
+      <polygon points="40,100 120,100 180,108 220,108 280,72 340,58 400,65 460,48 520,38 580,42 640,46 680,53 680,170 40,170" fill="#00ff88" opacity="0.06"/>
+      <polyline points="40,100 120,100 180,108 220,108 280,72 340,58 400,65 460,48 520,38 580,42 640,46 680,53" fill="none" stroke="#00ff88" stroke-width="2" opacity="0.8"/>
+      <!-- Trade markers -->
+      <circle cx="120" cy="100" r="4" fill="#00aaff"/>
+      <text x="112" y="95" fill="#00aaff" font-size="8" font-family="monospace">BONK</text>
+      <circle cx="180" cy="108" r="4" fill="#ff4455"/>
+      <text x="168" y="122" fill="#ff4455" font-size="8" font-family="monospace">POPCAT</text>
+      <circle cx="280" cy="72" r="4" fill="#00ff88"/>
+      <text x="268" y="67" fill="#00ff88" font-size="8" font-family="monospace">SLERF</text>
+      <circle cx="340" cy="58" r="4" fill="#00ff88"/>
+      <text x="332" y="53" fill="#00ff88" font-size="8" font-family="monospace">WIF</text>
+      <circle cx="400" cy="65" r="4" fill="#ff4455"/>
+      <text x="392" y="79" fill="#ff4455" font-size="8" font-family="monospace">MYRO</text>
+      <circle cx="460" cy="48" r="4" fill="#00ff88"/>
+      <text x="440" y="43" fill="#00ff88" font-size="8" font-family="monospace">MOODENG</text>
+      <circle cx="520" cy="38" r="4" fill="#00ff88"/>
+      <text x="512" y="33" fill="#00ff88" font-size="8" font-family="monospace">GIGA</text>
+      <circle cx="640" cy="46" r="4" fill="#00ff88"/>
+      <text x="620" y="41" fill="#00ff88" font-size="8" font-family="monospace">SLERF</text>
+      <!-- time labels -->
+      <text x="40" y="188" fill="#444" font-size="8" font-family="monospace">19:50</text>
+      <text x="200" y="188" fill="#444" font-size="8" font-family="monospace">19:55</text>
+      <text x="360" y="188" fill="#444" font-size="8" font-family="monospace">20:00</text>
+      <text x="520" y="188" fill="#444" font-size="8" font-family="monospace">20:05</text>
+      <text x="650" y="188" fill="#444" font-size="8" font-family="monospace">20:10</text>
+    </svg>
+  </div>
+</div>
+
+<div style="display:flex;gap:16px;flex-wrap:wrap;">
+
+  <div class="section" style="flex:1;min-width:300px;">
+    <div class="section-title">SIGNAL FEED</div>
+    <div style="background:#0a0a0a;border:1px solid #ffffff10;border-radius:6px;padding:12px;font-size:11px;line-height:2;">
+      <div><span style="color:#ffaa00;">20:13</span> <span style="color:#00ff88;">▲ FOMO ALERT</span> MOODENG — retail tx ratio surged to 84.0% in 30min</div>
+      <div><span style="color:#ffaa00;">20:12</span> <span style="color:#00aaff;">● SCAN</span> 5 tokens scanned, 2 rejected (security), 1 rejected (RSI)</div>
+      <div><span style="color:#ffaa00;">20:11</span> <span style="color:#00ff88;">▲ TP2 HIT</span> SLERF exited 30% at +56.5% — realized +$16.95</div>
+      <div><span style="color:#ffaa00;">20:09</span> <span style="color:#00ff88;">▲ TP1 HIT</span> GIGA exited 50% at +30.2% — realized +$15.10</div>
+      <div><span style="color:#ffaa00;">20:07</span> <span style="color:#ff4455;">▼ SL HIT</span> POPCAT stopped out at -8.0% — lost $8.00</div>
+      <div><span style="color:#ffaa00;">20:05</span> <span style="color:#00ff88;">▲ TP2 HIT</span> BONK exited 30% at +44.9% — realized +$13.46</div>
+      <div><span style="color:#ffaa00;">20:02</span> <span style="color:#00ff88;">▲ FOMO ALERT</span> SLERF — retail tx ratio 90.6%, security 94 ✓</div>
+      <div><span style="color:#ffaa00;">19:58</span> <span style="color:#ff4455;">✗ REJECT</span> MYRO — retail ratio 50.3% below threshold</div>
+      <div><span style="color:#ffaa00;">19:55</span> <span style="color:#00aaff;">● BOOT</span> FOMO Catcher initialized — BWS API connected</div>
+    </div>
+  </div>
+
+  <div class="section" style="flex:1;min-width:300px;">
+    <div class="section-title">AGENT ARCHITECTURE</div>
+    <div style="background:#0a0a0a;border:1px solid #ffffff10;border-radius:6px;padding:16px;font-size:11px;">
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <div style="background:#071a10;border:1px solid #00ff8860;border-radius:4px;padding:8px 12px;min-width:140px;text-align:center;">
+          <div style="color:#00ff88;font-size:10px;font-weight:bold;">SCANNER</div>
+          <div style="color:#888;font-size:9px;margin-top:2px;">rankings API</div>
+          <div style="color:#666;font-size:8px;">Finds top gainers</div>
+        </div>
+        <div style="color:#00ff8840;">→</div>
+        <div style="background:#04101a;border:1px solid #00aaff60;border-radius:4px;padding:8px 12px;min-width:140px;text-align:center;">
+          <div style="color:#00aaff;font-size:10px;font-weight:bold;">GUARD</div>
+          <div style="color:#888;font-size:9px;margin-top:2px;">security + liquidity</div>
+          <div style="color:#666;font-size:8px;">Eliminates scams</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-left:20px;">
+        <div style="color:#00aaff40;">↓</div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+        <div style="background:#100e00;border:1px solid #ffaa0060;border-radius:4px;padding:8px 12px;min-width:140px;text-align:center;">
+          <div style="color:#ffaa00;font-size:10px;font-weight:bold;">FOMO DETECTOR ★</div>
+          <div style="color:#888;font-size:9px;margin-top:2px;">kline + tx_info</div>
+          <div style="color:#666;font-size:8px;">Detects retail surge</div>
+        </div>
+        <div style="color:#ffaa0040;">→</div>
+        <div style="background:#071a10;border:1px solid #00ff8860;border-radius:4px;padding:8px 12px;min-width:140px;text-align:center;">
+          <div style="color:#00ff88;font-size:10px;font-weight:bold;">EXECUTOR</div>
+          <div style="color:#888;font-size:9px;margin-top:2px;">quote → confirm → send</div>
+          <div style="color:#666;font-size:8px;">Executes swap on DEX</div>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:0;padding-left:20px;">
+        <div style="color:#00ff8840;">↓</div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;margin-top:12px;">
+        <div style="background:#0a0015;border:1px solid #aa44ff60;border-radius:4px;padding:8px 12px;min-width:300px;text-align:center;">
+          <div style="color:#aa44ff;font-size:10px;font-weight:bold;">EXIT MANAGER — Triple-Exit Strategy</div>
+          <div style="color:#888;font-size:9px;margin-top:2px;">token_price (10s polling)</div>
+          <div style="color:#666;font-size:8px;">TP1 (+15%) → TP2 (+30%) → SL (-8%) → Time Stop (30min)</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<div class="watermark">FOMO CATCHER</div>
+
+<div class="footer">
+  FOMO Catcher by T-crypto8 — Built with Bitget Wallet Skill (BWS) — #AgentTalentShow — Solana Agent Economy Hackathon
+</div>
+
+</body>
+</html>
