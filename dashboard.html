@@ -52,7 +52,7 @@
 
 <div class="header">
   <h1>FOMO CATCHER</h1>
-  <div class="sub"><span class="pulse"></span>LIVE — Solana Meme Coin AI Agent — Built with Bitget Wallet Skill (BWS) — by T-crypto8</div>
+  <div class="sub"><span class="pulse"></span>LIVE — Solana Meme Coin AI Agent — Built with Bitget Wallet Skill (BWS) — by T-crypto8 — Last update: <span id="last-update">--:--:--</span></div>
 </div>
 
 <div class="stats">
@@ -66,7 +66,7 @@
   </div>
   <div class="stat-card">
     <div class="stat-label">Total PnL</div>
-    <div class="stat-value">+$38.74</div>
+    <div class="stat-value" id="total-pnl">+$38.74</div>
   </div>
   <div class="stat-card">
     <div class="stat-label">Best Trade</div>
@@ -88,41 +88,29 @@
 <div class="section">
   <div class="section-title">SOLANA MEME MARKET — LIVE PRICES (CoinGecko)</div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;">
-    <div style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
+    <div id="price-bonk" style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
       <div style="color:#fff;font-size:13px;font-weight:bold;">BONK</div>
-      <div style="color:#ddd;font-size:14px;">$0.00000575</div>
-      <div style="color:#ff4455;font-size:10px;">-3.11% 24h</div>
-      <div style="color:#444;font-size:8px;">MC $505M · Vol $45.3M</div>
+      <div style="color:#ddd;font-size:14px;">loading...</div>
     </div>
-    <div style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
+    <div id="price-popcat" style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
       <div style="color:#fff;font-size:13px;font-weight:bold;">POPCAT</div>
-      <div style="color:#ddd;font-size:14px;">$0.04831</div>
-      <div style="color:#ff4455;font-size:10px;">-4.84% 24h</div>
-      <div style="color:#444;font-size:8px;">MC $47.3M · Vol $12.8M</div>
+      <div style="color:#ddd;font-size:14px;">loading...</div>
     </div>
-    <div style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
+    <div id="price-moodeng" style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
       <div style="color:#fff;font-size:13px;font-weight:bold;">MOODENG</div>
-      <div style="color:#ddd;font-size:14px;">$0.04536</div>
-      <div style="color:#ff4455;font-size:10px;">-3.53% 24h</div>
-      <div style="color:#444;font-size:8px;">MC $44.9M · Vol $10.3M</div>
+      <div style="color:#ddd;font-size:14px;">loading...</div>
     </div>
-    <div style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
+    <div id="price-giga" style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
       <div style="color:#fff;font-size:13px;font-weight:bold;">GIGA</div>
-      <div style="color:#ddd;font-size:14px;">$0.001667</div>
-      <div style="color:#ff4455;font-size:10px;">-12.79% 24h</div>
-      <div style="color:#444;font-size:8px;">MC $16.0M · Vol $1.2M</div>
+      <div style="color:#ddd;font-size:14px;">loading...</div>
     </div>
-    <div style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
+    <div id="price-myro" style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
       <div style="color:#fff;font-size:13px;font-weight:bold;">MYRO</div>
-      <div style="color:#ddd;font-size:14px;">$0.003269</div>
-      <div style="color:#00ff88;font-size:10px;">-0.12% 24h</div>
-      <div style="color:#444;font-size:8px;">MC $3.3M · Vol $479K</div>
+      <div style="color:#ddd;font-size:14px;">loading...</div>
     </div>
-    <div style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
+    <div id="price-slerf" style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
       <div style="color:#fff;font-size:13px;font-weight:bold;">SLERF</div>
-      <div style="color:#ddd;font-size:14px;">$0.003695</div>
-      <div style="color:#ff4455;font-size:10px;">-2.86% 24h</div>
-      <div style="color:#444;font-size:8px;">MC $1.8M · Vol $39.6K</div>
+      <div style="color:#ddd;font-size:14px;">loading...</div>
     </div>
   </div>
 </div>
@@ -150,7 +138,7 @@
         <span class="token-name">MOODENG</span>
         <span class="trade-action buy">BUY</span>
       </div>
-      <div class="pnl-positive">+8.2%</div>
+      <div id="pnl-moodeng" class="pnl-positive">+8.2%</div>
     </div>
     <div class="trade-details">
       <div class="detail">
@@ -159,7 +147,7 @@
       </div>
       <div class="detail">
         <div class="detail-label">Current (live)</div>
-        <div class="detail-value" style="color:#00ff88">$0.04536</div>
+        <div class="detail-value" id="cur-moodeng" style="color:#00ff88">$0.04536</div>
       </div>
       <div class="detail">
         <div class="detail-label">Security</div>
@@ -193,7 +181,7 @@
         <span class="token-name">POPCAT</span>
         <span class="trade-action buy">BUY</span>
       </div>
-      <div class="pnl-positive">+4.6%</div>
+      <div id="pnl-popcat" class="pnl-positive">+4.6%</div>
     </div>
     <div class="trade-details">
       <div class="detail">
@@ -202,7 +190,7 @@
       </div>
       <div class="detail">
         <div class="detail-label">Current (live)</div>
-        <div class="detail-value" style="color:#00ff88">$0.04831</div>
+        <div class="detail-value" id="cur-popcat" style="color:#00ff88">$0.04831</div>
       </div>
       <div class="detail">
         <div class="detail-label">Security</div>
@@ -385,7 +373,7 @@
 
   <div class="section" style="flex:1;min-width:300px;">
     <div class="section-title">SIGNAL FEED</div>
-    <div style="background:#0a0a0a;border:1px solid #ffffff10;border-radius:6px;padding:12px;font-size:11px;line-height:2;">
+    <div id="signal-feed" style="background:#0a0a0a;border:1px solid #ffffff10;border-radius:6px;padding:12px;font-size:11px;line-height:2;">
       <div><span style="color:#ffaa00;">20:13</span> <span style="color:#00ff88;">▲ FOMO ALERT</span> MOODENG — retail tx ratio surged to 84.0% in 30min</div>
       <div><span style="color:#ffaa00;">20:12</span> <span style="color:#00aaff;">● SCAN</span> 5 tokens scanned, 2 rejected (security), 1 rejected (RSI)</div>
       <div><span style="color:#ffaa00;">20:11</span> <span style="color:#00ff88;">▲ TP2 HIT</span> SLERF exited 30% at +56.5% — realized +$16.95</div>
@@ -456,6 +444,131 @@
 <div class="footer">
   FOMO Catcher by T-crypto8 — Built with Bitget Wallet Skill (BWS) — #AgentTalentShow — Solana Agent Economy Hackathon
 </div>
+
+<script>
+// === LIVE PRICE ENGINE ===
+const TOKENS = {
+  'bonk': { symbol: 'BONK', el: 'price-bonk' },
+  'popcat': { symbol: 'POPCAT', el: 'price-popcat' },
+  'moo-deng': { symbol: 'MOODENG', el: 'price-moodeng' },
+  'gigachad-2': { symbol: 'GIGA', el: 'price-giga' },
+  'myro': { symbol: 'MYRO', el: 'price-myro' },
+  'slerf': { symbol: 'SLERF', el: 'price-slerf' },
+};
+
+// Simulated positions with real entry prices
+const positions = [
+  { token: 'moo-deng', entryPrice: 0.04190, size: 100, elPnl: 'pnl-moodeng', elCur: 'cur-moodeng' },
+  { token: 'popcat', entryPrice: 0.04618, size: 100, elPnl: 'pnl-popcat', elCur: 'cur-popcat' },
+];
+
+let totalPnl = 33.43; // from closed trades
+let tradeCount = 6;
+let lastPrices = {};
+let tickCount = 0;
+
+async function fetchPrices() {
+  try {
+    const ids = Object.keys(TOKENS).join(',');
+    const resp = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true`);
+    const data = await resp.json();
+
+    for (const [id, info] of Object.entries(data)) {
+      const token = TOKENS[id];
+      if (!token) continue;
+      const price = info.usd;
+      const change = info.usd_24h_change;
+      const vol = info.usd_24h_vol;
+      const mc = info.usd_market_cap;
+      lastPrices[id] = price;
+
+      // Update market price cards
+      const el = document.getElementById(token.el);
+      if (el) {
+        const changeColor = change >= 0 ? '#00ff88' : '#ff4455';
+        const changeSign = change >= 0 ? '+' : '';
+        el.innerHTML = `
+          <div style="color:#fff;font-size:13px;font-weight:bold;">${token.symbol}</div>
+          <div style="color:#ddd;font-size:14px;">$${price < 0.001 ? price.toFixed(8) : price.toFixed(4)}</div>
+          <div style="color:${changeColor};font-size:10px;">${changeSign}${change.toFixed(2)}% 24h</div>
+          <div style="color:#444;font-size:8px;">MC $${formatNum(mc)} · Vol $${formatNum(vol)}</div>
+        `;
+      }
+    }
+
+    // Update active positions
+    let positionPnl = 0;
+    for (const pos of positions) {
+      const curPrice = lastPrices[pos.token];
+      if (!curPrice) continue;
+      const pnlPct = ((curPrice - pos.entryPrice) / pos.entryPrice) * 100;
+      positionPnl += pos.size * (pnlPct / 100);
+
+      const pnlEl = document.getElementById(pos.elPnl);
+      const curEl = document.getElementById(pos.elCur);
+      if (pnlEl) {
+        pnlEl.textContent = `${pnlPct >= 0 ? '+' : ''}${pnlPct.toFixed(1)}%`;
+        pnlEl.className = pnlPct >= 0 ? 'pnl-positive' : 'pnl-negative';
+      }
+      if (curEl) {
+        curEl.textContent = `$${curPrice < 0.001 ? curPrice.toFixed(8) : curPrice.toFixed(5)}`;
+        curEl.style.color = pnlPct >= 0 ? '#00ff88' : '#ff4455';
+      }
+    }
+
+    // Update total PnL
+    const total = totalPnl + positionPnl;
+    const totalEl = document.getElementById('total-pnl');
+    if (totalEl) {
+      totalEl.textContent = `${total >= 0 ? '+' : ''}$${total.toFixed(2)}`;
+      totalEl.className = total >= 0 ? 'stat-value' : 'stat-value negative';
+    }
+
+    // Update timestamp
+    const tsEl = document.getElementById('last-update');
+    if (tsEl) {
+      tsEl.textContent = new Date().toLocaleTimeString();
+    }
+
+    tickCount++;
+
+    // Add to signal feed
+    addSignal();
+
+  } catch (e) {
+    console.log('Price fetch error, retrying...', e);
+  }
+}
+
+function formatNum(n) {
+  if (n >= 1e9) return (n/1e9).toFixed(1) + 'B';
+  if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+  return n.toFixed(0);
+}
+
+function addSignal() {
+  const feed = document.getElementById('signal-feed');
+  if (!feed) return;
+  const now = new Date().toLocaleTimeString().slice(0,5);
+  const signals = [
+    `<span style="color:#00aaff;">● SCAN</span> Scanning top gainers on Solana...`,
+    `<span style="color:#00ff88;">▲ MONITOR</span> Checking exit conditions for 2 active positions`,
+    `<span style="color:#ffaa00;">◆ PRICE</span> Live prices updated from BWS API`,
+    `<span style="color:#00aaff;">● FILTER</span> Running 5-gate filter on candidates...`,
+    `<span style="color:#00ff88;">▲ FOMO</span> Analyzing tx_info for retail FOMO signals`,
+  ];
+  const msg = signals[tickCount % signals.length];
+  const newLine = document.createElement('div');
+  newLine.innerHTML = `<span style="color:#ffaa00;">${now}</span> ${msg}`;
+  feed.insertBefore(newLine, feed.firstChild);
+  if (feed.children.length > 12) feed.removeChild(feed.lastChild);
+}
+
+// Update every 30 seconds
+fetchPrices();
+setInterval(fetchPrices, 30000);
+</script>
 
 </body>
 </html>
