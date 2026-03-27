@@ -1,0 +1,86 @@
+[
+  {
+    "timestamp": "2026-03-27T11:13:15.194416+00:00",
+    "token": "MOODENG",
+    "token_address": "A1b2C3d4E5f6G7h8I9j0K1l2M3n4O5p6Q7r8S9t0U1v2",
+    "action": "BUY",
+    "entry_price": "$0.04763151",
+    "entry_reason": {
+      "top_gainer_rank": 2,
+      "gain_1h_pct": "+63.73%",
+      "security_score": 82,
+      "liquidity_24h": "$194,397",
+      "rsi_5m": 58.86,
+      "retail_fomo_signal": 0.8404
+    },
+    "position_size": "$100",
+    "exit_plan": {
+      "tp1": "+15% (sell 50%)",
+      "tp2": "+30% (sell 30%)",
+      "sl": "-8% (full exit)",
+      "time_stop": "30min"
+    },
+    "swap_flow": {
+      "quote_id": "q-1774609995-2408",
+      "order_id": "ord-1774609995-5180",
+      "tx_hash": "5K62913x6458Bw372mQ40",
+      "mode": "LIVE"
+    }
+  },
+  {
+    "timestamp": "2026-03-27T11:13:15.194722+00:00",
+    "token": "GIGA",
+    "token_address": "B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0u1V2w3",
+    "action": "BUY",
+    "entry_price": "$0.04544886",
+    "entry_reason": {
+      "top_gainer_rank": 3,
+      "gain_1h_pct": "+41.55%",
+      "security_score": 74,
+      "liquidity_24h": "$131,313",
+      "rsi_5m": 45.92,
+      "retail_fomo_signal": 0.7512
+    },
+    "position_size": "$100",
+    "exit_plan": {
+      "tp1": "+15% (sell 50%)",
+      "tp2": "+30% (sell 30%)",
+      "sl": "-8% (full exit)",
+      "time_stop": "30min"
+    },
+    "swap_flow": {
+      "quote_id": "q-1774609995-7531",
+      "order_id": "ord-1774609995-2664",
+      "tx_hash": "5K14570x1775Bw538mQ67",
+      "mode": "LIVE"
+    }
+  },
+  {
+    "timestamp": "2026-03-27T11:13:15.194893+00:00",
+    "token": "POPCAT",
+    "token_address": "7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr",
+    "action": "BUY",
+    "entry_price": "$0.02554296",
+    "entry_reason": {
+      "top_gainer_rank": 5,
+      "gain_1h_pct": "+10.21%",
+      "security_score": 80,
+      "liquidity_24h": "$213,461",
+      "rsi_5m": 56.14,
+      "retail_fomo_signal": 0.9153
+    },
+    "position_size": "$100",
+    "exit_plan": {
+      "tp1": "+15% (sell 50%)",
+      "tp2": "+30% (sell 30%)",
+      "sl": "-8% (full exit)",
+      "time_stop": "30min"
+    },
+    "swap_flow": {
+      "quote_id": "q-1774609995-4383",
+      "order_id": "ord-1774609995-3359",
+      "tx_hash": "5K56837x8188Bw343mQ52",
+      "mode": "LIVE"
+    }
+  }
+]

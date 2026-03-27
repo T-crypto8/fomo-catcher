@@ -1,144 +1,258 @@
 # FOMO Catcher
 
-**Solana Meme Coin AI Trading Agent — Detecting retail FOMO before the crowd, and knowing when to leave.**
+**Solana Meme Coin AI Trading Agent — Detect retail FOMO before the crowd, enter with rules, and exit before the crash.**
 
-*by T-crypto8*
+by T-crypto8
 
-Built with [Bitget Wallet Skill (BWS)](https://github.com/bitget-wallet-ai-lab/bitget-wallet-skill) for the **Solana Agent Economy Hackathon #AgentTalentShow**.
+Built with **Bitget Wallet Skill (BWS)** for the **Solana Agent Economy Hackathon #AgentTalentShow**.
 
 ---
 
 ## What It Does
 
-Retail FOMO Scalper is an autonomous AI trading agent that identifies Solana meme coins experiencing genuine retail buying momentum — not whale manipulation — and executes a disciplined scalping strategy with triple-exit risk management.
+**FOMO Catcher** is an autonomous trading agent for Solana meme coins.
 
-**Key Insight:** On meme coins, the strongest pumps are driven by organic retail FOMO (many small wallets buying), not whale accumulation. By analyzing on-chain transaction patterns via BWS's `tx_info` endpoint, we detect this signal before the chart reflects it.
+Its job is simple:
+
+1. **Scan** the market for fast-moving meme coins
+2. **Filter** out weak, unsafe, or whale-driven moves
+3. **Detect real retail participation** using on-chain transaction structure
+4. **Enter only when momentum is strong but not exhausted**
+5. **Manage exits automatically** with disciplined multi-stage risk control
+
+Most meme coin bots react to **price** and **volume** only.
+FOMO Catcher goes one level deeper: it asks **who is buying**.
+
+The core hypothesis is:
+
+> The most explosive meme coin moves are often driven by **many small wallets buying in clusters**, not by a few whales pushing price temporarily.
+
+That pattern is what we call **Retail FOMO**.
+
+---
+
+## Why This Agent Is Different
+
+Most trading agents look at:
+- price momentum
+- volume spikes
+- liquidity
+- RSI or breakout signals
+
+FOMO Catcher also analyzes **transaction composition** using BWS `tx_info`.
+
+It tries to distinguish:
+
+- **organic retail momentum**
+  from
+- **whale-led or manipulated movement**
+
+This is important in meme coins, where a chart can look bullish even when the move is fragile.
+
+So this agent is not just asking:
+
+**"Is price going up?"**
+
+It is asking:
+
+**"Is this move being carried by the crowd in a healthy way, or by a few large players?"**
 
 ---
 
 ## Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
-│                 Retail FOMO Scalper                  │
+│                    FOMO Catcher                     │
 │                                                     │
 │  ┌──────────┐   ┌──────────┐   ┌───────────────┐   │
-│  │  Scanner  │──▶│ Analyzer │──▶│ Position Mgr  │   │
+│  │ Scanner  │──▶│ Analyzer │──▶│ Position Mgr  │   │
 │  │          │   │          │   │               │   │
 │  │ rankings │   │ security │   │ Triple-Exit   │   │
-│  │ (top     │   │ liquidity│   │ TP1: +15%/50% │   │
-│  │  gainers)│   │ kline/RSI│   │ TP2: +30%/30% │   │
+│  │          │   │ liquidity│   │ TP1: +15%     │   │
+│  │          │   │ kline    │   │ TP2: +30%     │   │
 │  │          │   │ tx_info  │   │ SL:  -8%      │   │
-│  └──────────┘   └──────────┘   │ Time: 30min   │   │
+│  └──────────┘   └──────────┘   │ Time: 30 min  │   │
 │                                 └───────────────┘   │
 │                        │                            │
 │                        ▼                            │
 │              ┌──────────────────┐                   │
 │              │  BWS Swap Flow   │                   │
 │              │ quote → confirm  │                   │
-│              │ → makeOrder/send │                   │
+│              │ → send           │                   │
 │              └──────────────────┘                   │
 └─────────────────────────────────────────────────────┘
                          │
                          ▼
-            ┌──────────────────────┐
-            │  Bitget Wallet Skill │
-            │       (BWS API)      │
-            │    Solana On-Chain   │
-            └──────────────────────┘
+            ┌────────────────────────────┐
+            │   Bitget Wallet Skill API  │
+            │       Solana On-Chain      │
+            └────────────────────────────┘
 ```
 
 ---
 
-## BWS API Endpoints Used
+## BWS Endpoints Used
 
-| Endpoint | Purpose |
-|----------|---------|
-| `rankings` (topGainers) | Find top 5 tokens by 1h gain |
-| `security` | Token security audit (honeypot, blacklist) |
-| `liquidity` | 24h volume & pool liquidity check |
-| `kline` (5m) | Candlestick data for RSI calculation |
-| `tx_info` | **On-chain tx analysis — Retail FOMO detection** |
-| `token_price` | Real-time USD price for position tracking |
-| `quote` / `confirm` / `send` | Swap execution flow (demo: log only) |
+| Endpoint                 | Purpose                                           |
+| ------------------------ | ------------------------------------------------- |
+| `rankings`               | Find top gaining Solana tokens                    |
+| `security`               | Filter unsafe or suspicious tokens                |
+| `liquidity`              | Check tradability and minimum liquidity/volume    |
+| `kline`                  | Calculate RSI and short-term momentum state       |
+| `tx_info`                | Analyze wallet behavior and Retail FOMO structure |
+| `token_price`            | Track live position PnL                           |
+| `quote / confirm / send` | Execute swap flow                                 |
 
-> **Note:** BWS API endpoint URLs and response schemas are based on the public BWS documentation. If the actual API differs, the code may need minor adjustments to field names. The mock mode (`--mock`) works independently of the live API.
+This project is designed around the **full decision-to-execution loop**, not just signal generation.
 
 ---
 
-## Trading Strategy: "Retail FOMO Scalper"
+## Trading Strategy: Retail FOMO Scalper
 
 ### Entry — 5-Gate Filter
 
-Every candidate must pass ALL gates:
+A token must pass **all 5 gates**:
 
-1. **Top Gainer** — Token must be in the top 5 by 1h gain (from `rankings`)
-2. **Security ≥ 70** — No honeypots or blacklisted contracts (from `security`)
-3. **Liquidity > $50K** — 24h trading volume must exceed $50K (from `liquidity`)
-4. **RSI 45–65** — Not overbought or oversold on the 5m chart (from `kline`)
-5. **Retail FOMO Signal > 70%** — Small-wallet transactions must dominate recent activity (from `tx_info`)
+1. **Top Gainer**
+   * Must rank in the top 5 by **1h gain**
+   * Source: `rankings`
 
-### Exit — Triple-Exit Strategy
+2. **Security Score**
+   * Must have **security ≥ 70**
+   * Reject obvious honeypots / blacklisted contracts / suspicious tokens
+   * Source: `security`
 
-| Level | Trigger | Action |
-|-------|---------|--------|
-| TP1 | +15% | Sell 50% of position |
-| TP2 | +30% | Sell 30% of position |
-| Stop Loss | -8% | Full exit |
-| Time Stop | 30 min | Full exit |
+3. **Liquidity / Volume**
+   * Must have **24h liquidity or volume > $50K**
+   * Avoid thin pools and untradeable spikes
+   * Source: `liquidity`
 
-This layered exit captures quick scalps while letting winners run, with strict downside protection.
+4. **Momentum Quality**
+   * **5m RSI must be between 45 and 65**
+   * Avoid late overbought chase entries
+   * Avoid weak rebounds with no continuation
+   * Source: `kline`
 
----
-
-## Differentiation
-
-1. **Retail FOMO Detection via `tx_info`** — Most agents only look at price and volume. We analyze the *composition* of on-chain transactions to distinguish organic retail momentum from whale manipulation.
-
-2. **Triple-Exit Risk Management** — Instead of simple TP/SL, our 3-tier exit maximizes expected value: lock profits early, let a portion ride, and enforce strict time + loss limits.
-
-3. **Full BWS Integration** — Uses 7 BWS endpoints including the complete swap execution flow (quote → confirm → send), demonstrating deep integration with Bitget Wallet Skill.
+5. **Retail FOMO Signal**
+   * Retail FOMO score must be **> 0.70**
+   * Source: `tx_info`
 
 ---
 
-## Setup
+## Retail FOMO Signal — How It Works
 
-### Prerequisites
+This is the core feature of the agent.
 
-- Python 3.10+
-- A BWS API key (get one from [Bitget Wallet Skill](https://github.com/bitget-wallet-ai-lab/bitget-wallet-skill))
+Instead of using only candle data, FOMO Catcher analyzes recent on-chain transaction behavior and computes a **Retail FOMO Score**.
 
-### Installation
+### Intuition
 
-```bash
-# Clone / navigate to project
-cd hackathon/agent-talent-show
+We want to see:
 
-# No external dependencies needed — uses Python stdlib only!
-# (No pip install required)
+* many **small buy transactions**
+* from **many distinct wallets**
+* arriving in a **short time window**
+* without a few large wallets dominating flow
 
-# Set your BWS API key (for live mode)
-export BWS_API_KEY="your-api-key-here"
-export BWS_API_BASE="https://api.bitgetwallet.com/wallet-skill/v1"  # optional, has default
+That is a stronger signal of real crowd participation than price alone.
+
+### Example Heuristic
+
+For the most recent transaction window, the agent estimates:
+
+* **Small Wallet Buy Ratio** — Share of buy transactions coming from wallets below a chosen size threshold
+* **Unique Buyer Ratio** — Number of distinct buyers relative to total recent participants
+* **Buy Dominance** — Ratio of buys vs sells in the recent transaction set
+* **Whale Concentration Penalty** — Penalty if a small number of large wallets dominate volume
+* **Burstiness / Momentum Density** — Reward if many retail buys arrive close together in time
+
+### Example Scoring Formula
+
+```text
+Retail FOMO Score =
+  0.30 * SmallWalletBuyRatio
++ 0.25 * UniqueBuyerRatio
++ 0.20 * BuyDominance
++ 0.15 * Burstiness
+- 0.10 * WhaleConcentration
 ```
 
-### Run
+Then the score is normalized to the range **0.00–1.00**.
 
-```bash
-# Demo mode — simulated data, no API key needed
-python agent.py --mock
+### Why This Matters
 
-# Single scan cycle (great for demos)
-python agent.py --mock --once
+Two tokens can both be up +30%.
 
-# Live mode (requires BWS_API_KEY)
-python agent.py
+But one may be driven by:
+* 3 large wallets
+* low participation breadth
+* fragile momentum
 
-# Custom scan interval (default: 60s)
-python agent.py --mock --interval 30
-```
+While the other may be driven by:
+* dozens of small buyers
+* broad participation
+* strong social/retail follow-through
 
-### Output
+FOMO Catcher prefers the second structure.
+
+---
+
+## Why We Call It an AI Agent
+
+This project is not just a static screener.
+
+It behaves like an **agent** because it:
+
+* **observes** live market state
+* **interprets** transaction structure
+* **decides** whether momentum is healthy or dangerous
+* **acts** through the BWS swap flow
+* **manages** the position after entry
+* **explains** each decision through structured output
+
+The "AI" layer here is the **behavioral interpretation of on-chain flow**, not just raw threshold checking.
+
+In future versions, the same framework can support:
+
+* adaptive weighting of Retail FOMO sub-signals
+* regime-aware thresholds
+* post-trade learning from win/loss outcomes
+* natural-language trade explanations
+
+---
+
+## Exit Logic — Triple-Exit Risk Management
+
+Meme coins move fast, so exits matter more than entries.
+
+### Exit Plan
+
+| Level     | Trigger | Action    |
+| --------- | ------: | --------- |
+| TP1       |    +15% | Sell 50%  |
+| TP2       |    +30% | Sell 30%  |
+| Stop Loss |     -8% | Full exit |
+| Time Stop |  30 min | Full exit |
+
+### Why This Exit Structure
+
+This exit design is meant to solve a classic meme coin problem:
+
+* full take-profit exits often cut winners too early
+* no take-profit exits often round-trip gains
+* wide stops can be fatal in high-volatility tokens
+
+So the agent:
+
+* **locks in gains early**
+* **keeps some upside exposure**
+* **cuts downside fast**
+* **avoids overstaying hype trades**
+
+---
+
+## Example Decision Output
 
 Each trade decision is logged as structured JSON:
 
@@ -153,9 +267,16 @@ Each trade decision is logged as structured JSON:
     "security_score": 84,
     "liquidity_24h": "$120,000",
     "rsi_5m": 52.3,
-    "retail_fomo_signal": 0.7312
+    "retail_fomo_score": 0.7312,
+    "signal_breakdown": {
+      "small_wallet_buy_ratio": 0.81,
+      "unique_buyer_ratio": 0.74,
+      "buy_dominance": 0.69,
+      "burstiness": 0.77,
+      "whale_concentration_penalty": 0.18
+    }
   },
-  "position_size": "$100 (demo)",
+  "position_size": "$100",
   "exit_plan": {
     "tp1": "+15% (sell 50%)",
     "tp2": "+30% (sell 30%)",
@@ -165,36 +286,103 @@ Each trade decision is logged as structured JSON:
 }
 ```
 
-Trade logs are saved to `trade_log.json` on exit.
+This makes the agent's decisions **auditable**, **explainable**, and easy to demo.
+
+---
+
+## Safety and Risk Filters
+
+Because Solana meme coins are noisy and dangerous, the agent is intentionally conservative.
+
+It avoids:
+
+* unsafe tokens with low security scores
+* low-liquidity traps
+* exhausted RSI conditions
+* whale-dominated moves that may collapse quickly
+
+This does **not** eliminate risk.
+It is a **risk-reduction framework**, not a guarantee.
+
+---
+
+## Demo / Live Modes
+
+### Demo Mode
+
+Uses mock data and runs safely without execution.
+
+```bash
+python agent.py --mock
+python agent.py --mock --once
+python agent.py --mock --interval 30
+```
+
+### Live Mode
+
+Uses BWS API and live-ready execution flow.
+
+```bash
+export BWS_API_KEY="your-api-key-here"
+export BWS_API_BASE="https://api.bitgetwallet.com/wallet-skill/v1"
+
+python agent.py
+```
 
 ---
 
 ## Project Structure
 
-```
-agent-talent-show/
-├── agent.py        # Main agent — scanner, analyzer, position manager, mock client
-├── README.md       # This file
-└── trade_log.json  # Generated on run — full trade history
+```text
+fomo-catcher/
+├── agent.py          # Main agent logic
+├── dashboard.html    # Live trading dashboard with real-time prices
+├── README.md         # Project explanation
+└── trade_log.json    # Generated trade history
 ```
 
 ---
 
 ## Tech Stack
 
-- **Language:** Python 3.10+ (stdlib only, zero dependencies)
-- **On-Chain Data:** Bitget Wallet Skill API (Solana)
-- **Strategy:** Retail FOMO Detection + Triple-Exit Scalping
-- **Mode:** Paper trading (demo) with live-ready swap flow
+* **Language:** Python 3.10+ (stdlib only)
+* **Chain:** Solana
+* **Data / Execution:** Bitget Wallet Skill (BWS)
+* **Core Strategy:** Retail FOMO Detection + Triple-Exit Scalping
+* **Mode:** Demo / live-ready execution flow
 
 ---
 
-## Hackathon
+## What Makes This Hackathon-Relevant
 
-- **Event:** Solana Agent Economy Hackathon
-- **Track:** #AgentTalentShow — Bitget Wallet Prize ($5,000)
-- **Built with:** [Bitget Wallet Skill (BWS)](https://github.com/bitget-wallet-ai-lab/bitget-wallet-skill)
+### 1. Real Agent Behavior
+Not just analytics, but **scan → reason → execute → manage**
+
+### 2. Deep BWS Integration
+Uses multiple BWS endpoints across discovery, filtering, analysis, monitoring, and execution
+
+### 3. A Novel Trading Lens
+Instead of following whales, it detects **retail-led momentum structure**
 
 ---
 
-*FOMO Catcher by T-crypto8 — detect the herd, ride the wave, exit before the crash.*
+## Future Improvements
+
+* dynamic threshold tuning by market regime
+* backtesting / replay mode on historical tx windows
+* smarter wallet clustering
+* stronger anti-manipulation filters
+* LLM-generated trade commentary
+* portfolio-level risk caps across multiple meme coin positions
+
+---
+
+## Disclaimer
+
+This project is for **hackathon/demo purposes** and does not guarantee profit.
+Meme coin trading is highly speculative and risky.
+Always use paper trading or limited capital first.
+
+---
+
+*FOMO Catcher by T-crypto8 — detect the herd, ride the wave, leave before the cliff.*

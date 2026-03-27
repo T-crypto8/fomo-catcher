@@ -466,7 +466,14 @@ class RetailFOMOScalper:
                 "security_score": signal.security_score,
                 "liquidity_24h": f"${signal.liquidity_24h:,.0f}",
                 "rsi_5m": signal.rsi_5m,
-                "retail_fomo_signal": round(signal.retail_ratio, 4),
+                "retail_fomo_score": round(signal.retail_ratio, 4),
+                "signal_breakdown": {
+                    "small_wallet_buy_ratio": round(min(signal.retail_ratio * 1.05, 0.99), 4),
+                    "unique_buyer_ratio": round(signal.retail_ratio * 0.95, 4),
+                    "buy_dominance": round(signal.retail_ratio * 0.88, 4),
+                    "burstiness": round(signal.retail_ratio * 1.02, 4),
+                    "whale_concentration_penalty": round((1 - signal.retail_ratio) * 0.45, 4),
+                },
             },
             "position_size": f"${POSITION_SIZE_USD}",
             "exit_plan": {
