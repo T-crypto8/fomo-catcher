@@ -116,16 +116,9 @@
 </div>
 
 <div class="section">
-  <div class="section-title">SCAN LOG — CYCLE 8</div>
-  <div class="scan-log">
-    <div class="info">[20:13:05] Top gainers: POPCAT +64.9% | MYRO +57.2% | BONK +53.7% | MOODENG +33.2% | WIF +19.3%</div>
-    <div class="reject">[20:13:05] POPCAT — REJECT: Security score 38 &lt; 70</div>
-    <div class="reject">[20:13:05] MYRO — REJECT: Retail ratio 50.3% &lt; 70%</div>
-    <div class="reject">[20:13:05] BONK — REJECT: 24h volume $32,602 &lt; $50,000</div>
-    <div class="pass">[20:13:15] MOODENG — PASS: All gates cleared ✓ (security: 82, liq: $194K, RSI: 58.9, FOMO: 84.0%)</div>
-    <div class="pass">[20:13:15] GIGA — PASS: All gates cleared ✓ (security: 74, liq: $131K, RSI: 45.9, FOMO: 75.1%)</div>
-    <div class="reject">[20:13:15] SLERF — REJECT: RSI 66.3 outside [45, 65]</div>
-    <div class="pass">[20:13:15] POPCAT — PASS: All gates cleared ✓ (security: 80, liq: $213K, RSI: 56.1, FOMO: 91.5%)</div>
+  <div class="section-title" id="scan-log-title">SCAN LOG</div>
+  <div class="scan-log" id="scan-log">
+    <div class="info">Initializing agent...</div>
   </div>
 </div>
 
@@ -181,40 +174,16 @@
 <div class="section">
   <div class="section-title">CUMULATIVE PnL CHART</div>
   <div style="background:#0a0a0a;border:1px solid #ffffff10;border-radius:6px;padding:16px;">
-    <svg width="100%" viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+    <svg id="pnl-chart" width="100%" viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
       <line x1="40" y1="10" x2="40" y2="170" stroke="#ffffff10" stroke-width="1"/>
       <line x1="40" y1="170" x2="680" y2="170" stroke="#ffffff10" stroke-width="1"/>
       <line x1="40" y1="100" x2="680" y2="100" stroke="#ffffff08" stroke-width="1" stroke-dasharray="4 4"/>
-      <line x1="40" y1="30" x2="680" y2="30" stroke="#ffffff08" stroke-width="1" stroke-dasharray="4 4"/>
       <text x="5" y="104" fill="#666" font-size="9" font-family="monospace">$0</text>
-      <text x="5" y="34" fill="#666" font-size="9" font-family="monospace">+$60</text>
+      <text x="5" y="34" fill="#666" font-size="9" font-family="monospace" id="chart-top-label">+$60</text>
       <text x="5" y="174" fill="#666" font-size="9" font-family="monospace">-$20</text>
-      <!-- PnL line -->
-      <polygon points="40,100 120,100 180,108 220,108 280,72 340,58 400,65 460,48 520,38 580,42 640,46 680,53 680,170 40,170" fill="#00ff88" opacity="0.06"/>
-      <polyline points="40,100 120,100 180,108 220,108 280,72 340,58 400,65 460,48 520,38 580,42 640,46 680,53" fill="none" stroke="#00ff88" stroke-width="2" opacity="0.8"/>
-      <!-- Trade markers -->
-      <circle cx="120" cy="100" r="4" fill="#00aaff"/>
-      <text x="112" y="95" fill="#00aaff" font-size="8" font-family="monospace">BONK</text>
-      <circle cx="180" cy="108" r="4" fill="#ff4455"/>
-      <text x="168" y="122" fill="#ff4455" font-size="8" font-family="monospace">POPCAT</text>
-      <circle cx="280" cy="72" r="4" fill="#00ff88"/>
-      <text x="268" y="67" fill="#00ff88" font-size="8" font-family="monospace">SLERF</text>
-      <circle cx="340" cy="58" r="4" fill="#00ff88"/>
-      <text x="332" y="53" fill="#00ff88" font-size="8" font-family="monospace">WIF</text>
-      <circle cx="400" cy="65" r="4" fill="#ff4455"/>
-      <text x="392" y="79" fill="#ff4455" font-size="8" font-family="monospace">MYRO</text>
-      <circle cx="460" cy="48" r="4" fill="#00ff88"/>
-      <text x="440" y="43" fill="#00ff88" font-size="8" font-family="monospace">MOODENG</text>
-      <circle cx="520" cy="38" r="4" fill="#00ff88"/>
-      <text x="512" y="33" fill="#00ff88" font-size="8" font-family="monospace">GIGA</text>
-      <circle cx="640" cy="46" r="4" fill="#00ff88"/>
-      <text x="620" y="41" fill="#00ff88" font-size="8" font-family="monospace">SLERF</text>
-      <!-- time labels -->
-      <text x="40" y="188" fill="#444" font-size="8" font-family="monospace">19:50</text>
-      <text x="200" y="188" fill="#444" font-size="8" font-family="monospace">19:55</text>
-      <text x="360" y="188" fill="#444" font-size="8" font-family="monospace">20:00</text>
-      <text x="520" y="188" fill="#444" font-size="8" font-family="monospace">20:05</text>
-      <text x="650" y="188" fill="#444" font-size="8" font-family="monospace">20:10</text>
+      <polyline id="pnl-line" points="40,100" fill="none" stroke="#00ff88" stroke-width="2" opacity="0.8"/>
+      <g id="pnl-markers"></g>
+      <text id="chart-time" x="600" y="188" fill="#444" font-size="8" font-family="monospace"></text>
     </svg>
   </div>
 </div>
@@ -224,16 +193,7 @@
   <div class="section" style="flex:1;min-width:300px;">
     <div class="section-title">SIGNAL FEED</div>
     <div id="signal-feed" style="background:#0a0a0a;border:1px solid #ffffff10;border-radius:6px;padding:12px;font-size:11px;line-height:2;">
-      <div><span style="color:#ffaa00;">--:--</span> <span style="color:#00aaff;">● BOOT</span> FOMO Catcher initialized — waiting for signals...</div>
-      <div><span style="color:#ffaa00;">--:--</span> <span style="color:#00ff88;">▲ FOMO ALERT</span> MOODENG — retail tx ratio surged to 84.0% in 30min</div>
-      <div><span style="color:#ffaa00;">20:12</span> <span style="color:#00aaff;">● SCAN</span> 5 tokens scanned, 2 rejected (security), 1 rejected (RSI)</div>
-      <div><span style="color:#ffaa00;">20:11</span> <span style="color:#00ff88;">▲ TP2 HIT</span> SLERF exited 30% at +56.5% — realized +$16.95</div>
-      <div><span style="color:#ffaa00;">20:09</span> <span style="color:#00ff88;">▲ TP1 HIT</span> GIGA exited 50% at +30.2% — realized +$15.10</div>
-      <div><span style="color:#ffaa00;">20:07</span> <span style="color:#ff4455;">▼ SL HIT</span> POPCAT stopped out at -8.0% — lost $8.00</div>
-      <div><span style="color:#ffaa00;">20:05</span> <span style="color:#00ff88;">▲ TP2 HIT</span> BONK exited 30% at +44.9% — realized +$13.46</div>
-      <div><span style="color:#ffaa00;">20:02</span> <span style="color:#00ff88;">▲ FOMO ALERT</span> SLERF — retail tx ratio 90.6%, security 94 ✓</div>
-      <div><span style="color:#ffaa00;">19:58</span> <span style="color:#ff4455;">✗ REJECT</span> MYRO — retail ratio 50.3% below threshold</div>
-      <div><span style="color:#ffaa00;">19:55</span> <span style="color:#00aaff;">● BOOT</span> FOMO Catcher initialized — BWS API connected</div>
+      <div><span style="color:#00aaff;">● BOOT</span> FOMO Catcher initializing...</div>
     </div>
   </div>
 
@@ -331,6 +291,34 @@ async function fetchTradeLog() {
     // Update all stats from trade data
     updateStats(trades);
 
+    // Update signal feed from trade log
+    const feed = document.getElementById('signal-feed');
+    if (feed && trades.length > 0) {
+      feed.innerHTML = '';
+      const recent = trades.slice(-10).reverse();
+      for (const t of recent) {
+        const ts = new Date(t.timestamp).toLocaleTimeString().slice(0,5);
+        let line = '';
+        if (t.action === 'BUY') {
+          const score = t.entry_reason?.retail_fomo_score || 0;
+          line = `<span style="color:#ffaa00;">${ts}</span> <span style="color:#00ff88;">▲ BUY</span> ${t.token} — FOMO ${(score*100).toFixed(1)}% | Security ${t.entry_reason?.security_score} | ${t.entry_price}`;
+        } else if (t.action === 'SELL') {
+          const color = t.pnl_pct?.startsWith('-') ? '#ff4455' : '#00ff88';
+          line = `<span style="color:#ffaa00;">${ts}</span> <span style="color:${color};">${t.pnl_pct?.startsWith('-') ? '▼' : '▲'} ${t.reason}</span> ${t.token} — ${t.pnl_pct} | PnL ${t.realized_pnl}`;
+        }
+        if (line) {
+          const div = document.createElement('div');
+          div.innerHTML = line;
+          feed.appendChild(div);
+        }
+      }
+      // Add scan status line
+      const now = new Date().toLocaleTimeString().slice(0,5);
+      const scanDiv = document.createElement('div');
+      scanDiv.innerHTML = `<span style="color:#ffaa00;">${now}</span> <span style="color:#00aaff;">● SCAN</span> Agent running — ${trades.filter(t=>t.action==='BUY').length} entries, ${trades.filter(t=>t.action==='SELL').length} exits`;
+      feed.insertBefore(scanDiv, feed.firstChild);
+    }
+
   } catch(e) {
     // Not running on local server, skip
   }
@@ -396,9 +384,22 @@ function updateStats(trades) {
     if (s.position_closed) closedTokens.add(s.token);
   }
   const openBuys = buys.filter(b => !closedTokens.has(b.token));
+  const positionValue = openBuys.length * 100;
   const inPosEl = document.getElementById('stat-in-positions');
   if (inPosEl) {
-    inPosEl.innerHTML = `<div class="stat-value neutral">$${openBuys.length * 100}</div><div style="color:#666;font-size:10px;margin-top:2px;">${openBuys.length} active</div>`;
+    inPosEl.innerHTML = `<div class="stat-label">In Positions</div><div class="stat-value neutral">$${positionValue}</div><div style="color:#666;font-size:10px;margin-top:2px;">${openBuys.length} active</div>`;
+  }
+
+  // Wallet balance - subtract positions from initial balance
+  const solBalEl = document.getElementById('stat-sol-balance');
+  const solUsdEl = document.getElementById('stat-sol-usd');
+  if (solBalEl) {
+    const initialSol = 1.82;
+    const solPrice = lastPrices['solana'] || 186;
+    const usedSol = positionValue / solPrice;
+    const remainingSol = Math.max(0, initialSol - usedSol);
+    solBalEl.textContent = `${remainingSol.toFixed(2)} SOL`;
+    if (solUsdEl) solUsdEl.textContent = `≈ $${(remainingSol * solPrice).toFixed(2)} (SOL $${solPrice.toFixed(2)})`;
   }
 
   // Update active position cards
@@ -448,6 +449,54 @@ function updateStats(trades) {
         </div>`;
     }
     activePosContainer.innerHTML = html;
+  }
+
+  // Update PnL chart dynamically
+  const chartLine = document.getElementById('pnl-line');
+  const chartMarkers = document.getElementById('pnl-markers');
+  if (chartLine && sells.length > 0) {
+    let cumPnl = 0;
+    const points = [{x: 40, y: 100}];
+    const markers = [];
+    const step = Math.min(60, 600 / Math.max(sells.length, 1));
+    sells.forEach((s, i) => {
+      const val = parseFloat(s.realized_pnl?.replace(/[^-\d.]/g,'') || '0');
+      cumPnl += val;
+      const x = 40 + (i + 1) * step;
+      const y = Math.max(10, Math.min(170, 100 - cumPnl * 2));
+      points.push({x, y});
+      const color = val >= 0 ? '#00ff88' : '#ff4455';
+      markers.push(`<circle cx="${x}" cy="${y}" r="3.5" fill="${color}"/><text x="${x-10}" y="${y-8}" fill="${color}" font-size="7" font-family="monospace">${s.token}</text>`);
+    });
+    chartLine.setAttribute('points', points.map(p => `${p.x},${p.y}`).join(' '));
+    chartMarkers.innerHTML = markers.join('');
+    const now = new Date().toLocaleTimeString().slice(0,5);
+    const chartTime = document.getElementById('chart-time');
+    if (chartTime) chartTime.textContent = now;
+  }
+
+  // Update scan log from trade log
+  const scanLog = document.getElementById('scan-log');
+  if (scanLog && trades.length > 0) {
+    const now = new Date().toLocaleTimeString().slice(0,5);
+    let html = `<div class="info">[${now}] Agent scanning every 30s — ${buys.length} entries, ${sells.length} exits total</div>`;
+    const recent = trades.slice(-8).reverse();
+    for (const t of recent) {
+      const ts = new Date(t.timestamp).toLocaleTimeString().slice(0,8);
+      if (t.action === 'BUY') {
+        const fomo = t.entry_reason?.retail_fomo_score || 0;
+        html += `<div class="pass">[${ts}] ${t.token} — PASS ✓ security:${t.entry_reason?.security_score} RSI:${t.entry_reason?.rsi_5m} FOMO:${(fomo*100).toFixed(1)}% → BUY ${t.entry_price}</div>`;
+      } else if (t.action === 'SELL') {
+        const cls = parseFloat(t.pnl_pct) >= 0 ? 'pass' : 'reject';
+        html += `<div class="${cls}">[${ts}] ${t.token} — ${t.reason} ${t.pnl_pct} → PnL ${t.realized_pnl}</div>`;
+      }
+    }
+    scanLog.innerHTML = html;
+    const titleEl = document.getElementById('scan-log-title');
+    if (titleEl) titleEl.textContent = `SCAN LOG — ${buys.length + sells.length} EVENTS`;
+  } else if (scanLog) {
+    const now = new Date().toLocaleTimeString().slice(0,5);
+    scanLog.innerHTML = `<div class="info">[${now}] Agent running — scanning for signals...</div>`;
   }
 
   // Update closed positions
@@ -530,14 +579,10 @@ async function fetchPrices() {
       }
     }
 
-    // Update SOL balance
+    // Store SOL price
     const solData = data['solana'];
     if (solData) {
-      const solPrice = solData.usd;
-      const solBal = 1.82;
-      const solUsd = solBal * solPrice;
-      const solEl = document.getElementById('stat-sol-usd');
-      if (solEl) solEl.textContent = `≈ $${solUsd.toFixed(2)} (SOL $${solPrice.toFixed(2)})`;
+      lastPrices['solana'] = solData.usd;
     }
 
     // Update active positions
@@ -610,7 +655,42 @@ function addSignal() {
 }
 
 // Update every 30 seconds
-fetchPrices();
+// Fallback prices if CoinGecko rate limited
+const FALLBACK = {
+  'bonk': {usd:0.00000575,usd_24h_change:-3.11,usd_24h_vol:45336431,usd_market_cap:505401822},
+  'popcat': {usd:0.04831,usd_24h_change:-4.84,usd_24h_vol:12835549,usd_market_cap:47313579},
+  'moo-deng': {usd:0.04536,usd_24h_change:-3.53,usd_24h_vol:10332719,usd_market_cap:44883666},
+  'gigachad-2': {usd:0.001667,usd_24h_change:-12.79,usd_24h_vol:1180236,usd_market_cap:16007138},
+  'myro': {usd:0.003269,usd_24h_change:-0.12,usd_24h_vol:479379,usd_market_cap:3268883},
+  'slerf': {usd:0.003695,usd_24h_change:-2.86,usd_24h_vol:39558,usd_market_cap:1847629},
+  'solana': {usd:186.50,usd_24h_change:-1.2,usd_24h_vol:0,usd_market_cap:0},
+};
+
+async function initPrices() {
+  try {
+    await fetchPrices();
+  } catch(e) {}
+  // If prices still loading, use fallback
+  setTimeout(() => {
+    if (Object.keys(lastPrices).length === 0) {
+      console.log('Using fallback prices');
+      const data = FALLBACK;
+      for (const [id, info] of Object.entries(data)) {
+        const token = TOKENS[id];
+        if (!token) { lastPrices[id] = info.usd; continue; }
+        lastPrices[id] = info.usd;
+        const el = document.getElementById(token.el);
+        if (el) {
+          const changeColor = info.usd_24h_change >= 0 ? '#00ff88' : '#ff4455';
+          const changeSign = info.usd_24h_change >= 0 ? '+' : '';
+          el.innerHTML = '<div style="color:#fff;font-size:13px;font-weight:bold;">'+token.symbol+'</div><div style="color:#ddd;font-size:14px;">$'+(info.usd<0.001?info.usd.toFixed(8):info.usd.toFixed(4))+'</div><div style="color:'+changeColor+';font-size:10px;">'+changeSign+info.usd_24h_change.toFixed(2)+'% 24h</div><div style="color:#444;font-size:8px;">MC $'+formatNum(info.usd_market_cap)+' · Vol $'+formatNum(info.usd_24h_vol)+'</div>';
+        }
+      }
+      lastPrices['solana'] = FALLBACK['solana'].usd;
+    }
+  }, 3000);
+}
+initPrices();
 setInterval(fetchPrices, 30000);
 </script>
 
