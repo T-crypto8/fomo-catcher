@@ -86,7 +86,7 @@
 
 <!-- Live Market Prices -->
 <div class="section">
-  <div class="section-title">SOLANA MEME MARKET — LIVE PRICES (CoinGecko)</div>
+  <div class="section-title">SOLANA MEME MARKET — LIVE PRICES</div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;">
     <div id="price-bonk" style="background:#04101a;border:1px solid #ffffff15;border-radius:6px;padding:10px 16px;flex:1;min-width:100px;">
       <div style="color:#fff;font-size:13px;font-weight:bold;">BONK</div>
@@ -553,7 +553,7 @@ let tickCount = 0;
 async function fetchPrices() {
   try {
     const ids = Object.keys(TOKENS).join(',') + ',solana';
-    const resp = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true`);
+    const resp = await fetch(`/api/prices?ids=${ids}`);
     const data = await resp.json();
 
     for (const [id, info] of Object.entries(data)) {
@@ -655,7 +655,7 @@ function addSignal() {
 }
 
 // Update every 30 seconds
-// Fallback prices if CoinGecko rate limited
+// Fallback prices if API rate limited
 const FALLBACK = {
   'bonk': {usd:0.00000575,usd_24h_change:-3.11,usd_24h_vol:45336431,usd_market_cap:505401822},
   'popcat': {usd:0.04831,usd_24h_change:-4.84,usd_24h_vol:12835549,usd_market_cap:47313579},
